@@ -73,7 +73,6 @@ const carrinho = ref({
   valorTotal: 39.60
 }
 ]
-total: 288.30
 })
 
 function remover(index) {
