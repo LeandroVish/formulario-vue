@@ -111,16 +111,26 @@ function desconto(id) {
   border-radius: 10px;
   color: black;
 }
+.carrinho {
+  text-align: auto;
+  margin: 15px;
+  margin-top: 15px;
+  width: auto;
+  height: auto;
+  border-radius: 10px;
+  color: black;
+}
 .margemLista {
-  display: grid;
-  grid-template-columns: auto;
+display: flex;
+flex-direction: row;
+flex-wrap: wrap;
 }
 .itens {
   width: 150px;
   padding: 20px;
   background-color: dodgerblue;
-  margin: 20px;
-  border-radius: 10px;
+  margin: 10px;
+  border-radius: 7px;
 }
 .geral {
   display: grid;
