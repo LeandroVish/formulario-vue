@@ -1,175 +1,253 @@
 <script setup>
 import { ref } from 'vue'
 
-const produtos = ref([
-{
-  id: 1,
-  nome: 'Camiseta',
-  preco: 49.90
-},
-{
-  id: 2,
-  nome: 'Calça',
-  preco: 99.90
-},
-{
-  id: 3,
-  nome: 'Meia',
-  preco: 9.90
-},
-{
-  id: 4,
-  nome: 'Sapato',
-  preco: 199.90
-},
-{
-  id: 5,
-  nome: 'Boné',
-  preco: 29.90
-},
-{
-  id: 6,
-  nome: 'Óculos',
-  preco: 99.90
-},
-{
-  id: 7,
-  nome: 'Relógio',
-  preco: 299.90
-},
-{
-  id: 8,
-  nome: 'Bermuda',
-  preco: 79.90
-},
-{
-  id: 9,
-  nome: 'Cueca',
-  preco: 19.90
-}
-])
-
-const carrinho = ref({
-  items: [
-{
-  id: 1,
-  nome: 'Camiseta',
-  preco: 49.90,
-  quantidade: 1,
-  valorTotal: 49.90
-},
-{
-  id: 2,
-  nome: 'Calça',
-  preco: 99.90,
-  quantidade: 2,
-  valorTotal: 199.80
-},
-{
-  id: 3,
-  nome: 'Meia',
-  preco: 9.90,
-  quantidade: 4,
-  valorTotal: 39.60
-}
-]
+const user = ref({
+  name: '',
+  surname: '',
+  email: '',
+  city: '',
+  state: '',
+  zip: '',
+  avatar: '',
+  hobbies: [],
+  preferredLanguage: ''
 })
 
-function remover(index) {
-  carrinho.value.splice(index, 1);
-}
-function adicionar(index) {
-  if(produtos.value[index].quantidade > 0){
+const states = [
+  { uf: 'AC', name: 'Acre' },
+  { uf: 'AL', name: 'Alagoas' },
+  { uf: 'AP', name: 'Amapá' },
+  { uf: 'AM', name: 'Amazonas' },
+  { uf: 'BA', name: 'Bahia' },
+  { uf: 'CE', name: 'Ceará' },
+  { uf: 'DF', name: 'Distrito Federal' },
+  { uf: 'ES', name: 'Espírito Santo' },
+  { uf: 'GO', name: 'Goiás' },
+  { uf: 'MA', name: 'Maranhão' },
+  { uf: 'MT', name: 'Mato Grosso' },
+  { uf: 'MS', name: 'Mato Grosso do Sul' },
+  { uf: 'MG', name: 'Minas Gerais' },
+  { uf: 'PA', name: 'Pará' },
+  { uf: 'PB', name: 'Paraíba' },
+  { uf: 'PR', name: 'Paraná' },
+  { uf: 'PE', name: 'Pernambuco' },
+  { uf: 'PI', name: 'Piauí' },
+  { uf: 'RJ', name: 'Rio de Janeiro' },
+  { uf: 'RN', name: 'Rio Grande do Norte' },
+  { uf: 'RS', name: 'Rio Grande do Sul' },
+  { uf: 'RO', name: 'Rondônia' },
+  { uf: 'RR', name: 'Roraima' },
+  { uf: 'SC', name: 'Santa Catarina' },
+  { uf: 'SP', name: 'São Paulo' },
+  { uf: 'SE', name: 'Sergipe' },
+  { uf: 'TO', name: 'Tocantins' }
+]
 
-    novoItem.value.id = produtos.value[index].id;
-    novoItem.value.nome = produtos.value[index].nome;
-    novoItem.value.preco = produtos.value[index].preco;
-    novoItem.value.quantidade = produtos.value[index].quantidade;
-  } else {
-    alert("Escolha uma quantidade do produto que você dejesa")
+const mostrarPerfil = ref(false)
+
+function handleFileUpload(e) {
+  const target = e.target
+  console.log(target)
+  if (target && target.files) {
+    const file = target.files[0]
+    user.value.avatar = URL.createObjectURL(file)
   }
 }
-function desconto(id) {
-  if (produtos.value[id].quantidade > 0) {
-    produtos.value[id].quantidade--;
-  }
+
+function salvarPerfil() {
+  mostrarPerfil.value = true
 }
 </script>
 
 <template>
-  <div class="geral">
-    <div class="listaProdutos">
-      <h2>Lista de Produtos</h2>
-      <div class="margemLista">
-        <div class="itens" v-for="(produt, index) in produtos" :key="index">
-          <p>Nome: {{ produtos.nome }}</p>
-          <p>Preço: R$ {{ produtos.preco }}</p>
-          <p>Quantidade: {{ produtos.quantidade }}</p>
-          <button @click="produtos.quantidade++">Add</button>
-          <button @click="desconto(produtos.id - 1)">Rmv</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="carrinho">
-    <h2>Carrinho</h2>
-    <div class="itens" v-for="(produto, index) in carrinho" :key="index">
-      <p>Nome: {{ produto.nome }}</p>
-      <p>Preço: {{ produto.preco }}</p>
-      <p>Quantidade: {{ produto.quantidade }}</p>
-      <button @click="remover(index)">Rmv</button>
-    </div>
+  <div class="container">
+    <main>
+      <h1>Editor de Perfil</h1>
+      <transition name="form" mode="out-in">
+        <section v-if="mostrarPerfil">
+          <div class="resposta">
+            <p v-for="(value, key) of user" :key="key">{{ key }}: {{ value }}</p>
+            <img v-if="user.avatar" class="avatar" :src="user.avatar" />
+          </div>
+          <button class="btn btn-info" @click="mostrarPerfil = false">Esconder</button>
+        </section>
+        <form v-else class="conteudo" @submit.prevent="salvarPerfil()" validate>
+          <div class="col-md-4">
+            <label for="nameField" class="form-label">Nome</label>
+            <input type="text" class="form-control" id="nameField" v-model="user.name" required />
+            <div class="invalid-feedback">Nome obrigatório</div>
+          </div>
+          <div class="col-md-4">
+            <label for="surnameField" class="form-label">Sobrenome</label>
+            <input
+              type="text"
+              class="form-control"
+              id="surnameField"
+              v-model="user.surname"
+              required
+            />
+            <div class="invalid-feedback">Sobrenome obrigatório</div>
+          </div>
+          <div class="col-md-4">
+            <label for="emailField" class="form-label">E-mail</label>
+            <div class="input-group">
+              <span class="input-group-text" id="emailFieldPrepend">@</span>
+              <input
+                type="email"
+                class="form-control"
+                id="emailField"
+                aria-describedby="emailFieldPrepend"
+                v-model="user.email"
+                required
+              />
+              <div class="invalid-feedback">E-mail obrigatório.</div>
+              <div class="valid-feedback">E-mail válido!</div>
+            </div>
+          </div>
+          <div class="col-md-2">
+            <label for="cityField" class="form-label">Cidade</label>
+            <input type="text" class="form-control" id="cityField" v-model="user.city" />
+          </div>
+          <div class="col-md-2">
+            <label for="stateField" class="form-label">Estado</label>
+            <select class="form-select" id="stateField" v-model="user.state">
+              <option selected disabled value="">Selecionar...</option>
+              <option v-for="state of states" :key="state.uf" :value="state.uf">
+                {{ state.name }}
+              </option>
+            </select>
+          </div>
+          <div class="col-md-2">
+            <label for="zipField" class="form-label">CEP</label>
+            <input type="text" class="form-control" id="zipField" v-model="user.zip" />
+          </div>
+          <div class="col-md-6">
+            <label for="avatarField" class="form-label">Avatar</label>
+            <input
+              type="file"
+              class="form-control"
+              id="avatarField"
+              @change="handleFileUpload($event)"
+            />
+          </div>
+          <div class="col-6">
+            <p class="mb-0">Hobbies</p>
+            <input
+              class="ms-3 me-1"
+              type="checkbox"
+              id="hobbiesField"
+              value="esportes"
+              v-model="user.hobbies"
+            />
+            <label for="hobbiesField">Esportes</label>
+            <input
+              class="ms-3 me-1"
+              type="checkbox"
+              id="hobbiesField"
+              value="música"
+              v-model="user.hobbies"
+            />
+            <label for="hobbiesField">Música</label>
+            <input
+              class="ms-3 me-1"
+              type="checkbox"
+              id="hobbiesField"
+              value="viagens"
+              v-model="user.hobbies"
+            />
+            <label for="hobbiesField">Viagens</label>
+            <input
+              class="ms-3 me-1"
+              type="checkbox"
+              id="hobbiesField"
+              value="leitura"
+              v-model="user.hobbies"
+            />
+            <label for="hobbiesField">Leitura</label>
+          </div>
+          <div class="col-6">
+            <p class="mb-0">Linguagem preferida</p>
+            <input
+              class="ms-3 me-1"
+              type="radio"
+              v-model="user.preferredLanguage"
+              value="C"
+              id="langC"
+            />
+            <label for="langC">Css</label>
+            <input
+              class="ms-3 me-1"
+              type="radio"
+              v-model="user.preferredLanguage"
+              value="Java"
+              id="langJava"
+            />
+            <label for="langJava">Java</label>
+            <input
+              class="ms-3 me-1"
+              type="radio"
+              v-model="user.preferredLanguage"
+              value="Python"
+              id="langPython"
+            />
+            <label for="langPython">Python</label>
+            <input
+              class="ms-3 me-1"
+              type="radio"
+              v-model="user.preferredLanguage"
+              value="Javascript"
+              id="langJs"
+            />
+            <label for="langJs">JavaScript</label>
+          </div>
+          <div class="col-12">
+            <button class="btn btn-primary" type="submit">Enviar</button>
+          </div>
+        </form>
+      </transition>
+    </main>
   </div>
 </template>
 
 <style scoped>
-.listaProdutos {
-  text-align: auto;
-  margin: 15px;
-  margin-top: 15px;
-  width: auto;
-  height: auto;
+.container  {
+  background-color: skyblue;
   border-radius: 10px;
+  margin-left: 20%;
+  width: 400px;
+  left: 150px;
+  border: solid 1px;
+}
+h1 {
   color: black;
+  left: 25%;
+  font-weight: bold
 }
-.carrinho {
-  text-align: auto;
-  margin: 15px;
-  margin-top: 15px;
-  width: auto;
-  height: auto;
-  border-radius: 10px;
+
+.avatar {
+  width: 200px;
+  height: 300px;
+  border-radius: 20%;
+}
+
+.conteudo {
+  left: 10px;
+}
+
+.resposta {
+  left: 10px;
+}
+.btn {
   color: black;
-}
-.margemLista {
-display: flex;
-flex-direction: row;
-flex-wrap: wrap;
-}
-.itens {
-  width: 150px;
-  padding: 20px;
-  background-color: dodgerblue;
-  margin: 10px;
-  border-radius: 7px;
-}
-.geral {
-  display: grid;
-  grid-template-columns: auto;
-}
-h1, h2 {
-  margin-top: 0;
-  padding: 10px;
-  font-size: 25px;
-  color: rgb(224, 44, 44);
-}
-button {
-  margin: 3px;
-  font-size: 14px;
-  background-color: gray;
-  color: aliceblue;
+  background-color: white;
+  border: solid 1px;
   border-radius: 5px;
-  padding: 5px 10px;
+  left: 10px;
 }
-</style>
+.form-leave-active {
+  transition: opacity 0.4s ease;
+}
+.form-leave-to {
+  opacity: 0;
+}
+</style>  
